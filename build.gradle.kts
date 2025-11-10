@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
   testImplementation(kotlin("test"))
+  implementation(kotlin("stdlib"))
+  implementation(kotlin("reflect"))
 }
 
 tasks.test {

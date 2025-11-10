@@ -1,15 +1,20 @@
 package model
 
-class Tutor(
+class Cliente(
   nombre: String,
   val telefono: String,
   val email: String
 ): Usuario(nombre) {
 
-  // Dos tutores se consideran iguales si tienen el mismo nombre y correo
+  operator fun component1(): String = this.nombre
+  operator fun component2(): String = this.email
+  operator fun component3(): String = this.telefono
+
+  operator fun plus(other: Cliente): String = "${this.nombre} + ${other.nombre}"
+
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (other !is Tutor) return false
+    if (other !is Cliente) return false
     return this.nombre == other.nombre && this.email == other.email
   }
 

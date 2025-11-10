@@ -22,7 +22,7 @@ class Consulta(
     val totalConsulta = calcularTotalConsulta()
 
     println("")
-    println("-------------- RESUMEN CONSULTA Nº${idConsulta} ----")
+    println("-------------- RESUMEN CONSULTA Nº${idConsulta} -------------")
     println("-------------------------------------------------")
     println("Tutor: ${mascota.tutor.nombre}")
     println("Teléfono: ${mascota.tutor.telefono} - Correo Electrónico: ${mascota.tutor.email}")
