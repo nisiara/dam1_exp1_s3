@@ -1,9 +1,12 @@
 # Desarrollo Aplicaciones Móviles — Veterinaria (EXP1-S3)
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Gradle](https://img.shields.io/badge/gradle-%237F52FF.svg?style=for-the-badge&logo=gradle&logoColor=white)
 #### Aplicación de consola en Kotlin que simula el flujo de una veterinaria: registro de tutor y mascota, creación de consultas, cálculo de próximas vacunas y dosis recomendada, y visualización de veterinarios disponibles según el día de la semana.
 
 ## ⭐ Características
-- Registro de datos del tutor: nombre, teléfono y correo con validación de formato.
+### 2 flujos de interacción: 
+### Primer Flujo: Consulta veterinaria
+- Registro de datos de tutor y cliente: nombre, teléfono y correo con validación de formato.
 - Registro de datos de la mascota: nombre, especie, edad y peso, con validaciones numéricas.
 - Recomendaciones:
     - Próxima vacuna calculada en función de la edad.
@@ -17,24 +20,41 @@
     - Filtrado automático según el día actual.
 - Menú simple de navegación: crear nueva consulta, ver todas, salir.
 
+### Segundo Flujo: Venta de Fármacos
+- Registro de datos del cliente: nombre, teléfono y correo con validación de formato.
+- Elección de fármaco
+- Verificicación de descuento según tipo de fármaco y anotación `@Promocionable`
+- Uso de `reflexion`, `destructuring` y `overloading` de operadores 
+
+
 ## 📐 Estructura del proyecto
 ```
 / (raíz)
-├─ src/
-│  ├─ Main.kt                      # Punto de entrada; ejecuta Veterinaria.aplicacion()
-│  ├─ Veterinaria.kt               # Lógica principal del flujo y utilidades
-│  └─ model/
-│     ├─ Usuario.kt                
-│     ├─ Veterinario.kt            
-│     ├─ Tutor.kt                  
-│     ├─ Mascota.kt                
-│     └─ Consulta.kt               
+├ src/
+├── main/
+├─── kotlin/
+├────── Main.kt                  # Punto de entrada; ejecuta Veterinaria.aplicacion()
+├────── Veterinaria              # Lógica principal del flujo y utilidades  
+├────── model/
+         ├─ Cliente
+         ├─ Medicamento
+         ├─ Promocionable
+         ├─ Pedido
+         ├─ Usuario              
+         ├─ Veterinario            
+         ├─ Tutor                  
+         ├─ Mascota              
+         └─ Consulta
+├────── utils/
+         └─ VeterinariaUtils                        
 └─ README.md
+└─ TODO.md
 ```
 
 ## ✏️ Requisitos
-- JDK 17 o superior (se recomienda 17/21).
+- JDK 21.
 - IntelliJ IDEA
+- Gradle
 
 ## ⚙️ Cómo ejecutar
 1. Abrir el proyecto en IntelliJ IDEA.
