@@ -1,5 +1,7 @@
 package model
 
+import annotations.Promocionable
+
 @Promocionable("10%", "analgesico", 0.1)
 @Promocionable("50%", "vitamina", 0.5)
 open class Medicamento(

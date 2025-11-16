@@ -1,38 +1,37 @@
 import model.Cliente
 import model.Consulta
-import model.Mascota
-import model.Medicamento
 import model.Pedido
-import model.Promocionable
+import annotations.Promocionable
 import model.Tutor
-import model.Veterinario
+
+import service.ConsultaService
+import service.MascotaService
+import service.MedicamentoService
+import service.TutorService
 import java.time.LocalDate
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotations
-import utils.dosisRecomendada
-import utils.proximaVacuna
-import utils.revisarVeterinariosDisponibles
+
 import utils.formatearTelefono
 import utils.validarInput
 
 class Veterinaria {
 
   fun aplicacion(){
-    var idConsulta = 0
     var menuPrincipal = 0
     var inputMenu = 1
+
+    val servicioMascota = MascotaService()
+    val servicioMedicamento = MedicamentoService()
+    val servicioTutor = TutorService()
+    val servicioConsulta = ConsultaService()
 
     val listaConsutlas = mutableListOf<Consulta>()
     val listaPedidos = mutableListOf<Pedido>()
     val tutoresRegistrados = mutableSetOf<Tutor>()
     val clientesRegistrados = mutableSetOf<Cliente>()
 
-    val veterinarios = listOf(
-      Veterinario("Gabriel Chavez", listOf("lunes", "miércoles")),
-      Veterinario("Humberto Velez", listOf("martes", "jueves")),
-      Veterinario("Victor Delgado", listOf("viernes", "sábado"))
-    )
 
     do {
       println("")
@@ -62,139 +61,18 @@ class Veterinaria {
         1 -> {
           println("")
           println("----------- DATOS DEL TUTOR -----------")
-          print("Nombre del tutor: ")
-          val nombreTutor = readln().ifBlank{ null } ?: "Tutor desconocido"
-
-          val telefono = validarInput(
-            "Teléfono de contacto (número de 12 dígitos) ",
-            "telefono",
-            "El teléfono debe tener los 12 dígitos. Ingreslo nuevamente."
-          )
-          val telefonoFormateado = formatearTelefono(telefono)
-
-          val email = validarInput(
-            "Correo electrónico: ",
-            "email",
-            "El correo debe tener el formato correcto. @ y dominio."
-          )
-
-          val tutor = Tutor(nombreTutor, telefonoFormateado, email)
-
-          val agregadoTutor = tutoresRegistrados.add(tutor)
-          if (!agregadoTutor) {
-            println("**** [AVISO] El Tutor ya esta registrado ****.")
-          }
+          val tutor = servicioTutor.asignarTutor()
+          servicioTutor.revisarTutor(tutor, tutoresRegistrados)
 
           println("")
           println("--------- DATOS DE LA MASCOTA ---------")
-          print("Ingrese el nombre de la mascota: ")
-          val nombreMascota = readln().ifBlank{ null } ?: "Mascota sin nombre"
-          print("Especie mascota: ")
-          val especie = readln().ifBlank { null } ?: "Especie no especificada"
-
-          var edad: Int?
-          do {
-            print("Edad de la mascota: ")
-            val inputEdad = readln()
-            try {
-              edad = inputEdad.toInt()
-              if ( edad < 0){
-                println("La mascota debe tener una edad mayor a 0")
-              }
-            } catch (ex: NumberFormatException) {
-              println("Debes ingresar un número")
-              edad = null
-            }
-          } while (edad == null || edad <= 0)
-
-
-          var peso: Int?
-          do {
-            print("Peso de la mascota (Kg): ")
-            val inputPeso = readln()
-            try {
-              peso = inputPeso.toInt()
-              if ( peso < 0){
-                println("El peso de la mascota debe ser mayor a 0")
-              }
-            } catch (ex: NumberFormatException) {
-              println("Debes ingresar un número")
-              peso = null
-            }
-          } while (peso == null || peso <= 0)
-
-          println("")
-          println("----------------------------------------")
-          println("Basado en los datos de la mascota")
-          when (edad){
-            in 0..1 -> println("Necesita su vacuna semestral.")
-            in 2..6 -> println("Necesita su vacuna anual.")
-            else -> println("La vacuna para la mascota es opcional.")
-          }
-          proximaVacuna(edad)
-          dosisRecomendada(peso, edad)
-          println("----------------------------------------")
-          println("")
-
-          val mascota = Mascota(nombreMascota, especie, edad, tutor)
+          val mascota = servicioMascota.asignarMascota(tutor)
 
           println("")
           println("----------- DATOS CONSULTA -----------")
-          var opcionConsulta: Int?
-          do {
-            println("Ingresa el tipo de consulta")
-            println("[1]Peluqueria [2]Control [3]Otro")
-
-            val inputConsulta = readln()
-            try {
-              opcionConsulta = inputConsulta.toInt()
-              if (opcionConsulta !in 1..3) {
-                println("Ingresa el número correspondiente al tipo de consulta (1 - 2 o 3).")
-              }
-            } catch (ex: NumberFormatException) {
-              println("Ingresa solo números válidos (1 - 2 o 3), no letras.")
-              opcionConsulta = null
-            }
-          } while (opcionConsulta == null || opcionConsulta !in 1..3)
-
-          val descripcion = when (opcionConsulta) {
-            1 -> "Peluqueria"
-            2 -> "Control"
-            3 -> "Otro"
-            else -> "Tratamiento desconocido"
-          }
-
-          val horasOcupadas = listOf("10:00", "11:30", "15:00")
-          var inputHora = ""
-          do {
-            print("Ingrese hora de consulta (HH:MM): ")
-            val hora = readln()
-            inputHora = hora
-            if (inputHora in horasOcupadas) {
-              println("")
-              println("Intente con otro horario que no sea:")
-              for (item in horasOcupadas) {
-                println(item)
-              }
-            } else {
-              println("")
-              println("Hora registrada exitosamente para la consulta.")
-              println("")
-            }
-          } while (inputHora in horasOcupadas)
-
-
-          val valorConsulta = when (opcionConsulta) {
-            1 -> 15000
-            2 -> 10000
-            else -> 10000
-          }
-
-          val veterinario = revisarVeterinariosDisponibles(veterinarios)
-
-          val consulta = Consulta(++idConsulta, descripcion, valorConsulta, inputHora, mascota, veterinario)
-          listaConsutlas.add(consulta)
+          val consulta = servicioConsulta.asignarConsulta(mascota)
           consulta.resumenConsulta()
+          listaConsutlas.add(consulta)
 
 
           println("---------------------------------------------------------------")
@@ -283,28 +161,14 @@ class Veterinaria {
             }
           } while (opcionMedicamento !in 1..3)
 
-          val nombreMedicamento = when (opcionMedicamento) {
-            1 -> "kittydoll"
-            2 -> "k-9"
-            else -> "matapiojo"
-          }
-          val tipoMedicamento = when (opcionMedicamento) {
-            1 -> "analgesico"
-            2 -> "vitamina"
-            else -> "desparasitario"
-          }
-          var precioMedicamento = when (opcionMedicamento) {
-            1 -> 10000
-            2 -> 5000
-            else -> 2000
-          }
 
-          val medicamento = Medicamento(nombreMedicamento, tipoMedicamento, precioMedicamento)
+          val medicamento = servicioMedicamento.asignarMedicamento(opcionMedicamento)
 
           val fechaInicioPromo = LocalDate.now().minusDays(1)
           val fechaFinPromo = fechaInicioPromo.plusDays(3)
           val fechaVerificacion = LocalDate.now()
 
+          var precioMedicamento = 0
           val promociones = medicamento::class.findAnnotations<Promocionable>()
           val promocionesDisponibles = promociones.filter { it.tipo.equals(medicamento.tipo, ignoreCase = true) }
           if (promocionesDisponibles.isEmpty()) {
